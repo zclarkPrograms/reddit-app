@@ -1,47 +1,74 @@
-<script>
+<script lang="ts">
 	import Nav from './nav.svelte';
 	import axios from 'axios';
 
 	let subreddit = '';
 
-	const handleFormSubmit = (/** @type {{ detail: any; }} */ event) => {
-		const subreddit = event.detail;
+	const NUM_POSTS = 100;
+
+	let finishedFetch = false;
+
+	const handleFormSubmit = (event: CustomEvent) => {
+		subreddit = event.detail;
+		finishedFetch = false;
 
 		axios
-			.get('http://localhost:8000', { params: { subreddit, num_posts: 20 } })
+			.get('http://localhost:8000', { params: { subreddit, num_posts: NUM_POSTS } })
 			.then((response) => response.data)
-			.then((data) => (links = data.links))
+			.then((data) => {
+				links = data.links;
+				finishedFetch = true;
+			})
 			.catch((err) => console.error(err.message));
 	};
 
-	/**
-	 * @type {string[]}
-	 */
-	let links = [];
+	let links: string[] = [];
+
+	const handleClick = (event: Event) => {
+		const button = event.target as HTMLButtonElement;
+	};
 </script>
 
 <Nav on:formSubmit={handleFormSubmit} />
 
-{#if subreddit}
-	<h2>Reddit images for {subreddit}</h2>
+{#if subreddit && finishedFetch}
+	<h2 class="text-center">r/{subreddit}</h2>
 {/if}
 
-<div class="container">
-	{#each links as link, i}
-		{#if i % 3 === 0}
-			<div class="row">
-				{#each links.slice(i, i + 3) as row_link}
-					<div class="col-sm-4">
-						<img class="img-fluid" src={row_link} alt="" />
-					</div>
-				{/each}
+<div class="container-sm px-0">
+	<div class="row gx-3">
+		{#each links as link, i}
+			<div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+				<button class="img-button" on:click={handleClick}>
+					<img id={'' + i} class="img-fluid" src={link} alt="" />
+				</button>
 			</div>
-		{/if}
-	{/each}
+		{/each}
+	</div>
 </div>
 
 <style>
-	h2 {
-		text-align: center;
+	.img-button {
+		border: none;
+		padding: 0;
+	}
+
+	.img-button,
+	.img-fluid {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	@media (min-width: 800px) {
+		.container-sm {
+			max-width: 95%;
+		}
+	}
+
+	@media (max-width: 800px) {
+		.container-sm {
+			max-width: 100%;
+		}
 	}
 </style>

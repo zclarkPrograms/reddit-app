@@ -10,7 +10,7 @@
 </script>
 
 <nav class="navbar navbar-light bg-light justify-content-between">
-	<h1>Reddit Images</h1>
+	<h1 class="mx-3">Reddit Images</h1>
 	<form class="form-inline d-flex" on:submit={handleSubmit}>
 		<input
 			class="form-control"
@@ -21,9 +21,14 @@
 			aria-label="Search"
 			bind:value={subreddit}
 		/>
-		<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+		<button class="btn btn-outline-success my-2 my-sm-0 d-none d-md-block" type="submit"
+			>Search</button
+		>
 	</form>
 </nav>
 
 <style>
+	button {
+		margin: 0 20px;
+	}
 </style>
